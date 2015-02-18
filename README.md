@@ -3,6 +3,15 @@ Munin.WinNode
 
 Munin Node for the Windows platform written in .NET.
 
+Fork
+----
+Forked from https://github.com/jweber/Munin.WinNode. Awesome work.
+
+Changes include:
+    
+    * Support for the allow directive.
+    * Resharper cleanup.
+
 Usage
 -----
 To run in interactive mode, simply run the application from a command line:
