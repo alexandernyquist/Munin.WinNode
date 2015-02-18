@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -72,6 +73,9 @@ namespace Munin.WinNode
 
         void HandleClient(object client)
         {
+            // Munin expects floating point numbers to use a dot separator
+            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+
             var tcpClient = (TcpClient) client;
 
             if (AllowedAddresses != null)
