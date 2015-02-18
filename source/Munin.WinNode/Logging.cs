@@ -10,7 +10,9 @@ namespace Munin.WinNode
         static Logging()
         {
             if (_logInstance == null)
+            {
                 _logInstance = LogManager.GetLogger(typeof(Logging));
+            }
         }
 
         public static void Debug(string message, params object[] args)

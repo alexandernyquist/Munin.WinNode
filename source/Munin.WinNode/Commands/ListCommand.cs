@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Munin.WinNode.Commands
+﻿namespace Munin.WinNode.Commands
 {
     /// <summary>
     /// Returns a list of all available plugins on this node

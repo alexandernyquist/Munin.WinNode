@@ -16,7 +16,6 @@ namespace Munin.WinNode.Commands
 
         public void Execute(string[] arguments, out string response)
         {
-
             response = string.Format("Munin.WinNode on {0} version: {1}",
                                      Dns.GetHostName(),
                                      GetVersionString(true));
@@ -26,7 +25,9 @@ namespace Munin.WinNode.Commands
         {
             var version = typeof(Program).Assembly.GetName().Version;
             if (! includeRevision)
+            {
                 return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build);
+            }
 
             return version.ToString();
         }

@@ -26,18 +26,20 @@ namespace Munin.WinNode.Plugins
         public string GetConfiguration()
         {
             var output = new List<string>
-                         {
-                             "graph_title Processor Time",
-                             "graph_category System",
-                             "graph_args --base 1000 -l 0",
-                             "graph_vlabel % Processor Time"
-                         };
+            {
+                "graph_title Processor Time",
+                "graph_category System",
+                "graph_args --base 1000 -l 0",
+                "graph_vlabel % Processor Time"
+            };
 
             for (int i = 0; i < _processors.Count; i++)
             {
                 string prefix = "processor";
                 if (i > 0)
+                {
                     prefix += "_" + i + "_";
+                }
 
                 output.Add(string.Format("{0}.label {1}", prefix, i));
                 output.Add(string.Format("{0}.draw LINE", prefix));
@@ -54,7 +56,9 @@ namespace Munin.WinNode.Plugins
             {
                 string prefix = "processor";
                 if (i > 0)
+                {
                     prefix += "_" + i + "_";
+                }
 
                 output.Add(string.Format("{0}.value {1}", prefix, _processors[i].GetProcessorTime));
             }
@@ -79,9 +83,9 @@ namespace Munin.WinNode.Plugins
 
             public Processor(string name)
             {
-                this.Name = PerformanceCounterHelper.CleanName(name);
+                Name = PerformanceCounterHelper.CleanName(name);
 
-                this._counter = new PerformanceCounter("Processor", "% Processor Time", this.Name).Initialize();
+                _counter = new PerformanceCounter("Processor", "% Processor Time", Name).Initialize();
             }
 
             public string Name { get; private set; }
@@ -91,7 +95,7 @@ namespace Munin.WinNode.Plugins
                 get
                 {
                     var value = _counter.NextValue();
-                    Logging.Debug(" + Processor '{0}' time: {1}", this.Name, value);
+                    Logging.Debug(" + Processor '{0}' time: {1}", Name, value);
                     return value;
                 }
             }

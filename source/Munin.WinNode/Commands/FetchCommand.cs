@@ -44,7 +44,8 @@ namespace Munin.WinNode.Commands
             }
             catch (Exception ex)
             {
-                string message = string.Format("Plugin '{0}' threw exception when attempting to obtain values", plugin.Name);
+                string message = string.Format("Plugin '{0}' threw exception when attempting to obtain values",
+                                               plugin.Name);
                 Logging.Error(message, ex);
             }
 

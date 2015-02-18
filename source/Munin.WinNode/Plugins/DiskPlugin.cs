@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Munin.WinNode.Plugins
 {
@@ -18,15 +16,14 @@ namespace Munin.WinNode.Plugins
             get { return true; }
         }
 
-
-        private DriveInfo[] GetDrives()
+        DriveInfo[] GetDrives()
         {
             return DriveInfo.GetDrives()
-                .Where(d => d.DriveType == DriveType.Fixed)
-                .ToArray();
+                            .Where(d => d.DriveType == DriveType.Fixed)
+                            .ToArray();
         }
 
-        private string CleanDriveName(string name)
+        string CleanDriveName(string name)
         {
             return name.Replace(@"\", string.Empty);
         }
@@ -34,13 +31,13 @@ namespace Munin.WinNode.Plugins
         public string GetConfiguration()
         {
             var output = new List<string>
-                         {
-                             "graph_title Filesystem usage (in %)",
-                             "graph_category disk",
-                             "graph_info This graph shows disk usage on the machine.",
-                             "graph_args --upper-limit 100 -l 0",
-                             "graph_vlabel %"
-                         };
+            {
+                "graph_title Filesystem usage (in %)",
+                "graph_category disk",
+                "graph_info This graph shows disk usage on the machine.",
+                "graph_args --upper-limit 100 -l 0",
+                "graph_vlabel %"
+            };
 
             DriveInfo[] drives = GetDrives();
             int count = 0;
@@ -49,7 +46,10 @@ namespace Munin.WinNode.Plugins
                 string prefix = string.Format("disk_{0}_", count++);
                 if (! string.IsNullOrWhiteSpace(drive.VolumeLabel))
                 {
-                    output.Add(string.Format("{0}.label {1} ({2})", prefix, CleanDriveName(drive.Name), drive.VolumeLabel));
+                    output.Add(string.Format("{0}.label {1} ({2})",
+                                             prefix,
+                                             CleanDriveName(drive.Name),
+                                             drive.VolumeLabel));
                 }
                 else
                 {
@@ -73,7 +73,7 @@ namespace Munin.WinNode.Plugins
                 long total = drive.TotalSize;
                 long free = drive.TotalFreeSpace;
                 long used = total - free;
-                decimal percentFree = (used / (decimal)total) * 100;
+                decimal percentFree = (used / (decimal) total) * 100;
 
                 string prefix = string.Format("disk_{0}_", count++);
                 output.Add(string.Format("{0}.value {1:0.00}", prefix, percentFree));

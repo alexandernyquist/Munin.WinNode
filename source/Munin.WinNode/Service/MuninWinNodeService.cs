@@ -21,7 +21,9 @@ namespace Munin.WinNode
         protected override void OnStop()
         {
             if (_server != null)
+            {
                 _server.Dispose();
+            }
         }
     }
 }

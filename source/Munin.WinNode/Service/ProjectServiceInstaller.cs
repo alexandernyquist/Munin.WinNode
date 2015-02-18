@@ -10,10 +10,10 @@ namespace Munin.WinNode
 
         public ProjectServiceInstaller()
         {
-            this.Description = ProjectServiceName;
-            this.DisplayName = ProjectServiceName;
-            this.ServiceName = ProjectServiceName;
-            this.StartType = ServiceStartMode.Automatic;
+            Description = ProjectServiceName;
+            DisplayName = ProjectServiceName;
+            ServiceName = ProjectServiceName;
+            StartType = ServiceStartMode.Automatic;
         }
     }
 
@@ -22,7 +22,7 @@ namespace Munin.WinNode
     {
         public ProjectServiceProcessInstaller()
         {
-            this.Account = ServiceAccount.LocalSystem;
+            Account = ServiceAccount.LocalSystem;
         }
     }
 }

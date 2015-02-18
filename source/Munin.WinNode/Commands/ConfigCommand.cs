@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Munin.WinNode.Commands
+﻿namespace Munin.WinNode.Commands
 {
     /// <summary>
     /// Returns the configuration for the specified plugin

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -10,7 +9,7 @@ namespace Munin.WinNode
     {
         const string ConfigurationFileName = "munin-node.ini";
 
-        private static string ConfigurationFilePath
+        static string ConfigurationFilePath
         {
             get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationFileName); }
         }
@@ -38,7 +37,7 @@ namespace Munin.WinNode
             var status = GetPrivateProfileString(section, key, defaultValue, retVal, 255, ConfigurationFilePath);
 
             Logging.Debug(@"Read configuration value {0}\{1} as '{2}'", section, key, retVal);
-            
+
             return retVal.ToString();
         }
 
@@ -56,7 +55,9 @@ namespace Munin.WinNode
         {
             string value = GetValue(section, key, defaultValue.ToString());
             if (string.IsNullOrEmpty(value))
+            {
                 return defaultValue;
+            }
 
             try
             {
@@ -69,6 +70,11 @@ namespace Munin.WinNode
         }
 
         [DllImport("kernel32")]
-        private static extern long GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
+        static extern long GetPrivateProfileString(string section,
+                                                   string key,
+                                                   string def,
+                                                   StringBuilder retVal,
+                                                   int size,
+                                                   string filePath);
     }
 }

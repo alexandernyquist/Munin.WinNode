@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -16,16 +15,16 @@ namespace Munin.WinNode
 
         public TcpServer()
         {
-            this.Host = Configuration.GetValue("MuninNode", "Host", "*");
-            this.Port = Configuration.GetValue("MuninNode", "Port", 4949);
+            Host = Configuration.GetValue("MuninNode", "Host", "*");
+            Port = Configuration.GetValue("MuninNode", "Port", 4949);
 
             var allow = Configuration.GetValue("MuninNode", "Allow", string.Empty);
             if (!string.IsNullOrEmpty(allow))
             {
                 AllowedAddresses = new Regex(allow);
             }
-            
-            _listener = new TcpListener(HostToIpAddress(this.Host), this.Port);
+
+            _listener = new TcpListener(HostToIpAddress(Host), Port);
             _thread = new Thread(ListenForClient);
         }
 
@@ -33,10 +32,12 @@ namespace Munin.WinNode
         public int Port { get; private set; }
         public Regex AllowedAddresses { get; private set; }
 
-        private IPAddress HostToIpAddress(string host)
+        IPAddress HostToIpAddress(string host)
         {
             if (string.IsNullOrWhiteSpace(host) || host == "*")
+            {
                 return IPAddress.Any;
+            }
 
             return IPAddress.Parse(host);
         }
@@ -48,7 +49,7 @@ namespace Munin.WinNode
 
         public void Stop()
         {
-            this.Dispose();
+            Dispose();
         }
 
         public void Dispose()
@@ -57,10 +58,10 @@ namespace Munin.WinNode
             _listener.Stop();
         }
 
-        private void ListenForClient()
+        void ListenForClient()
         {
             Logging.Info("Waiting for connection...");
-            this._listener.Start();
+            _listener.Start();
             while (true)
             {
                 var client = _listener.AcceptTcpClient();
@@ -69,7 +70,7 @@ namespace Munin.WinNode
             }
         }
 
-        private void HandleClient(object client)
+        void HandleClient(object client)
         {
             var tcpClient = (TcpClient) client;
 
@@ -85,16 +86,16 @@ namespace Munin.WinNode
             }
 
             Logging.Info("Received connection from {0}", tcpClient.Client.RemoteEndPoint);
-            
+
             var data = new byte[tcpClient.ReceiveBufferSize];
             var dataString = new StringBuilder();
-          
+
             using (var stream = tcpClient.GetStream())
             {
                 WelcomeMessage(stream);
 
                 int readCount;
-                
+
                 while ((readCount = stream.Read(data, 0, tcpClient.ReceiveBufferSize)) != 0)
                 {
                     dataString.Append(Encoding.ASCII.GetString(data, 0, readCount));
@@ -102,9 +103,11 @@ namespace Munin.WinNode
                     if (Regex.IsMatch(dataString.ToString(), @"\r?\n"))
                     {
                         string message = NormalizeMessage(dataString.ToString());
-                            
+
                         if (message == "QUIT")
+                        {
                             break;
+                        }
 
                         MessageHandler(stream, message);
                         dataString.Clear();
@@ -126,7 +129,8 @@ namespace Munin.WinNode
 
         void WelcomeMessage(Stream stream)
         {
-            var welcomeMessage = Encoding.ASCII.GetBytes(string.Format("# munin node at {0}{1}", Dns.GetHostName(), Configuration.NewLine));
+            var welcomeMessage =
+                Encoding.ASCII.GetBytes(string.Format("# munin node at {0}{1}", Dns.GetHostName(), Configuration.NewLine));
             stream.Write(welcomeMessage, 0, welcomeMessage.Length);
         }
 
@@ -134,15 +138,17 @@ namespace Munin.WinNode
         {
             var messageParts = MessageParts.FromString(message);
             var command = CommandManager.CommandFromName(messageParts.Command);
-            
+
             string response = null;
             command.Execute(messageParts.Arguments, out response);
-            
+
             if (! string.IsNullOrEmpty(response))
             {
                 string responseMessage = string.Format("{1}{0}", Configuration.NewLine, response);
                 if (command.EndResponseWithPeriod)
+                {
                     responseMessage += "." + Configuration.NewLine;
+                }
 
                 var responseBytes = Encoding.ASCII.GetBytes(responseMessage);
                 stream.Write(responseBytes, 0, responseBytes.Length);

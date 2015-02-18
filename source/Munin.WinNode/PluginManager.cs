@@ -9,7 +9,7 @@ namespace Munin.WinNode
     static class PluginManager
     {
         static readonly List<IPlugin> _plugins = new List<IPlugin>();
-       
+
         /// <summary>
         /// Registers all plugins
         /// </summary>
@@ -24,9 +24,8 @@ namespace Munin.WinNode
             string pluginsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
             var assemblyPaths = Directory.GetFiles(pluginsPath, "*.dll", SearchOption.TopDirectoryOnly);
 
-            foreach ( var assemblyPath in assemblyPaths )
+            foreach (var assemblyPath in assemblyPaths)
             {
-
                 byte[] assemblyBytes = null;
                 try
                 {

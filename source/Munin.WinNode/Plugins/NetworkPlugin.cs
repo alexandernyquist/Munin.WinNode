@@ -13,7 +13,7 @@ namespace Munin.WinNode.Plugins
 
         public NetworkPlugin()
         {
-            _networkAdapters = new List<NetworkAdapter>();           
+            _networkAdapters = new List<NetworkAdapter>();
             EnumerateNetworkAdapters();
         }
 
@@ -30,17 +30,17 @@ namespace Munin.WinNode.Plugins
         public string GetConfiguration()
         {
             return new[]
-                   {
-                       "graph_args --base 1000 --lower-limit 0",
-                       "graph_title Network Traffic",
-                       "graph_order down up",
-                       "graph_category network",
-                       "graph_vlabel Bits per second",
-                       "down.draw AREA",
-                       "down.label Received bps",
-                       "up.draw LINE1",
-                       "up.label Sent bps"
-                   }.Combine();
+            {
+                "graph_args --base 1000 --lower-limit 0",
+                "graph_title Network Traffic",
+                "graph_order down up",
+                "graph_category network",
+                "graph_vlabel Bits per second",
+                "down.draw AREA",
+                "down.label Received bps",
+                "up.draw LINE1",
+                "up.label Sent bps"
+            }.Combine();
         }
 
         public string GetValues()
@@ -48,19 +48,18 @@ namespace Munin.WinNode.Plugins
             Logging.Debug("Fetching network statistics");
 
             return new[]
-                   {
-                       string.Format("down.value {0:0}", GetTotalBitsReceivedPerSecond()),
-                       string.Format("up.value {0:0}", GetTotalBitsSentPerSecond())
-                   }.Combine();
-            
+            {
+                string.Format("down.value {0:0}", GetTotalBitsReceivedPerSecond()),
+                string.Format("up.value {0:0}", GetTotalBitsSentPerSecond())
+            }.Combine();
         }
 
-        private float GetTotalBitsReceivedPerSecond()
+        float GetTotalBitsReceivedPerSecond()
         {
             return _networkAdapters.Sum(m => m.BitsPerSecondReceived);
         }
 
-        private float GetTotalBitsSentPerSecond()
+        float GetTotalBitsSentPerSecond()
         {
             return _networkAdapters.Sum(m => m.BitsPerSecondSent);
         }
@@ -107,29 +106,31 @@ namespace Munin.WinNode.Plugins
 
             public NetworkAdapter(string name)
             {
-                this.Name = PerformanceCounterHelper.CleanName(name);
-                this._receivedPerformanceCounter = new PerformanceCounter("Network Interface", "Bytes Received/sec", this.Name).Initialize();
-                this._sentPerformanceCounter = new PerformanceCounter("Network Interface", "Bytes Sent/sec", this.Name).Initialize();
+                Name = PerformanceCounterHelper.CleanName(name);
+                _receivedPerformanceCounter =
+                    new PerformanceCounter("Network Interface", "Bytes Received/sec", Name).Initialize();
+                _sentPerformanceCounter =
+                    new PerformanceCounter("Network Interface", "Bytes Sent/sec", Name).Initialize();
             }
 
             public string Name { get; private set; }
-            
+
             public float BitsPerSecondReceived
             {
                 get
                 {
                     var bps = _receivedPerformanceCounter.NextValue() * 8;
-                    Logging.Debug(" + Adapter '{0}' received bps: {1}", this.Name, bps);
+                    Logging.Debug(" + Adapter '{0}' received bps: {1}", Name, bps);
                     return bps;
                 }
             }
-            
+
             public float BitsPerSecondSent
             {
                 get
                 {
                     var bps = _sentPerformanceCounter.NextValue() * 8;
-                    Logging.Debug(" + Adapter '{0}' sent bps: {1}", this.Name, bps);
+                    Logging.Debug(" + Adapter '{0}' sent bps: {1}", Name, bps);
                     return bps;
                 }
             }

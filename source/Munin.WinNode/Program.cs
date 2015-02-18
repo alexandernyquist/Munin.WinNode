@@ -33,7 +33,10 @@ namespace Munin.WinNode
         /// </summary>
         static void ConfigureLog4Net()
         {
-            log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile));
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(
+                                                             new FileInfo(
+                                                                 AppDomain.CurrentDomain.SetupInformation
+                                                                          .ConfigurationFile));
         }
 
         static Assembly EmbeddedAssemblyResolver(object sender, ResolveEventArgs args)
@@ -48,9 +51,9 @@ namespace Munin.WinNode
             }
         }
 
-        private static void ProcessArguments(string[] args)
+        static void ProcessArguments(string[] args)
         {
-            switch(GetArgument(args))
+            switch (GetArgument(args))
             {
                 case "interactive":
                     InteractiveRun();
@@ -76,7 +79,7 @@ namespace Munin.WinNode
             }
         }
 
-        private static void InteractiveRun()
+        static void InteractiveRun()
         {
             PluginManager.RegisterPlugins();
 
@@ -87,7 +90,7 @@ namespace Munin.WinNode
                 Console.WriteLine(string.Format("Munin.WinNode version: {0}", VersionCommand.GetVersionString()));
                 Console.WriteLine(string.Format("Listening on {0}:{1}", tcpServer.Host, tcpServer.Port));
                 Console.WriteLine("Press <enter> to stop");
-                while(true)
+                while (true)
                 {
                     var readLine = Console.ReadLine() ?? "";
                     switch (readLine.ToLowerInvariant())
@@ -98,11 +101,11 @@ namespace Munin.WinNode
                         default:
                             return;
                     }
-                }               
-            }            
+                }
+            }
         }
 
-        private static void PrintUsage()
+        static void PrintUsage()
         {
             Console.WriteLine(@"
 Munin.WinNode
@@ -117,18 +120,22 @@ Command line options:
 ");
         }
 
-        private static string GetArgument(string[] args)
+        static string GetArgument(string[] args)
         {
             if (args == null || args.Length == 0)
+            {
                 return "interactive";
+            }
 
             if (args[0].StartsWith("/") == false)
+            {
                 return "help";
+            }
 
             return args[0].Substring(1).ToLowerInvariant();
         }
 
-        private static void StopService()
+        static void StopService()
         {
             var serviceController = new ServiceController(ProjectServiceInstaller.ProjectServiceName);
             if (serviceController.Status == ServiceControllerStatus.Running)
@@ -138,7 +145,7 @@ Command line options:
             }
         }
 
-        private static void StartService()
+        static void StartService()
         {
             var serviceController = new ServiceController(ProjectServiceInstaller.ProjectServiceName);
             if (serviceController.Status != ServiceControllerStatus.Running)
@@ -148,7 +155,7 @@ Command line options:
             }
         }
 
-        private static void RestartService()
+        static void RestartService()
         {
             var serviceController = new ServiceController(ProjectServiceInstaller.ProjectServiceName);
             if (serviceController.Status == ServiceControllerStatus.Running)
@@ -164,7 +171,7 @@ Command line options:
             }
         }
 
-        private static void InstallAndStart()
+        static void InstallAndStart()
         {
             if (ServiceIsInstalled())
             {
@@ -172,13 +179,16 @@ Command line options:
             }
             else
             {
-                ManagedInstallerClass.InstallHelper(new[] { Assembly.GetExecutingAssembly().Location });
+                ManagedInstallerClass.InstallHelper(new[]
+                {
+                    Assembly.GetExecutingAssembly().Location
+                });
                 var startController = new ServiceController(ProjectServiceInstaller.ProjectServiceName);
                 startController.Start();
             }
         }
 
-        private static void StopAndUninstall()
+        static void StopAndUninstall()
         {
             if (!ServiceIsInstalled())
             {
@@ -188,13 +198,18 @@ Command line options:
             {
                 var serviceController = new ServiceController(ProjectServiceInstaller.ProjectServiceName);
                 if (serviceController.Status == ServiceControllerStatus.Running)
+                {
                     serviceController.Stop();
+                }
 
-                ManagedInstallerClass.InstallHelper(new[] { "/u", Assembly.GetExecutingAssembly().Location });
+                ManagedInstallerClass.InstallHelper(new[]
+                {
+                    "/u", Assembly.GetExecutingAssembly().Location
+                });
             }
         }
 
-        private static bool ServiceIsInstalled()
+        static bool ServiceIsInstalled()
         {
             return ServiceController.GetServices().Any(s => s.ServiceName == ProjectServiceInstaller.ProjectServiceName);
         }
