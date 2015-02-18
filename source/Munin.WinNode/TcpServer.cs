@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -18,6 +18,12 @@ namespace Munin.WinNode
         {
             this.Host = Configuration.GetValue("MuninNode", "Host", "*");
             this.Port = Configuration.GetValue("MuninNode", "Port", 4949);
+
+            var allow = Configuration.GetValue("MuninNode", "Allow", string.Empty);
+            if (!string.IsNullOrEmpty(allow))
+            {
+                AllowedAddresses = new Regex(allow);
+            }
             
             _listener = new TcpListener(HostToIpAddress(this.Host), this.Port);
             _thread = new Thread(ListenForClient);
@@ -25,6 +31,7 @@ namespace Munin.WinNode
 
         public string Host { get; private set; }
         public int Port { get; private set; }
+        public Regex AllowedAddresses { get; private set; }
 
         private IPAddress HostToIpAddress(string host)
         {
@@ -65,6 +72,18 @@ namespace Munin.WinNode
         private void HandleClient(object client)
         {
             var tcpClient = (TcpClient) client;
+
+            if (AllowedAddresses != null)
+            {
+                var ipEndpoint = tcpClient.Client.RemoteEndPoint as IPEndPoint;
+                if (!AllowedAddresses.IsMatch(ipEndpoint.Address.ToString()))
+                {
+                    Logging.Info("Refusing connection from {0}", tcpClient.Client.RemoteEndPoint);
+                    tcpClient.Close();
+                    return;
+                }
+            }
+
             Logging.Info("Received connection from {0}", tcpClient.Client.RemoteEndPoint);
             
             var data = new byte[tcpClient.ReceiveBufferSize];

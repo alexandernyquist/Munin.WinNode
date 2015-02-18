@@ -63,9 +63,6 @@
     <Reference Include="System.ServiceProcess" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\VersionInfo.cs">
-      <Link>Properties\VersionInfo.cs</Link>
-    </Compile>
     <Compile Include="CommandManager.cs" />
     <Compile Include="Commands\ConfigCommand.cs" />
     <Compile Include="Commands\FetchCommand.cs" />
